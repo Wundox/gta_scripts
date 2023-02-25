@@ -27,7 +27,12 @@ class VisualInput(object):
             if not ret:
                 print("Non frame detected. End of stream")
                 return
-            return frame
+            # https://stackoverflow.com/a/39744436
+            lab = cv.cvtColor(frame, cv.COLOR_BGR2LAB)
+            clahe = cv.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
+            lab[:, :, 0] = clahe.apply(lab[:, :, 0])
+            enhanced_img = cv.cvtColor(lab, cv.COLOR_LAB2BGR)
+            return enhanced_img
         elif self.screen_area:
             screenshot = ImageGrab.grab(
                 bbox=self.screen_area,
@@ -85,6 +90,8 @@ class FishSymbolDetection(object):
 
     def __init__(self, model_path: str = "./assets/model.pt", showOutput: bool = True, custom_fish_symbol: FishSymbol = None):
         self.model = YOLO(model_path)
+        self.model.info(verbose=False)
+        self.model.overrides["verbose"] = False
         self.showOutput = showOutput
         self.origin_source_input = VisualInput()
         if custom_fish_symbol:
