@@ -1,0 +1,2 @@
+Ziehe sie den fisch heraus Farbe  R27 - G97 - B143 / Wenn fertig dann farbe R79 - G184 - B255
+ 1867, 1000, 1890, 1010

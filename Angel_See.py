@@ -2,10 +2,41 @@ import time
 
 import keyboard
 
+
 from fishing import FishSymbolDetection
 
 global stop
 stop = True
+
+
+def isWeiss(game_coords):
+    screenshot = ImageGrab.grab(
+        bbox=game_coords, include_layered_windows=True, all_screens=True)
+    erkennung = np.array(screenshot)
+    print(str(screenshot))
+    xlen = len(erkennung)
+    ylen = len(erkennung[0])
+
+    print("x:" + str(xlen) + " y:" + str(ylen))
+    midX = xlen // 2
+    midY = ylen // 2
+
+    print("mitte: x:" + str(midX) + " y:" + str(midY))
+
+    r = erkennung[midX, midY][0]
+    g = erkennung[midX, midY][1]
+    b = erkennung[midX, midY][2]
+    if [27, 97, 143] == [r, g, b]:
+        print("Fisch einziehen ")
+        keyboard.release('a')
+        keyboard.release('d')
+        mouse.press('left')
+        time.sleep(17)
+        mouse.release('left')
+        time.sleep(4)
+        keyboard.press_and_release('e')
+        return True
+    return False
 
 
 def start_event():
