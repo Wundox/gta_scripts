@@ -24,38 +24,61 @@ keyboard.add_hotkey('x', lambda: start_event())
 keyboard.add_hotkey('p', lambda: stop_event())
 
 fishDetection = FishSymbolDetection(
-    model_path=".\\assets\\model.pt", showOutput=True)
-# fishDetection = FishSymbolDetection(model_path="assets\model.pt")
-# fishDetection.useScreenshotInput([0, 20, 650, 700])
-fishDetection.useVideoInput(".\\assets\\fischen_short.mp4")
+    model_path=".\\assets\\model2.pt",
+    show_result=False,
+    pulling_bar_position=[1867, 1000, 1890, 1010]
+)
+# model_path=".\\model.pt", show_result=False)
+# fishDetection = FishSymbolDetection(model_path="assets\model.pt")xp
+# fishDetection.use_screenshot_input([0, 20, 650, 700])
+# fishDetection.use_video_input(".\\assets\\fischen_dark.mp4")
+fishDetection.use_video_input(0)
 while True:
     # warten bis eingabe dann start
-    print("Zum Starten x drücken d und p zum Pausieren")
+    print("Zum Starten x drücken p zum Pausieren")
     while stop == True:
         time.sleep(2)
 
-    fishDetection.start()
+    if stop == False:
+        print("Angel wird ausgeworfen")
+        start = None
+        now = None
+        keyboard.press_and_release('e')
+        fishDetection.start()
+
     while stop == False:
-        fishsymbol = fishDetection.detectFish()
+        fishsymbol = fishDetection.detect()
         if fishsymbol.detected():
-            if fishsymbol.isLeft():
-                # print("fish directed to left")
-                print("A wird gehalten")
-                keyboard.release('a')
-                keyboard.press('d')
-            if fishsymbol.isRight():
-                # print("fish directed to right")
+            # Tire out the fish on the hook
+            start = time.time()
+            if fishsymbol.is_left():
                 print("D wird gehalten")
-                keyboard.release('d')
+                keyboard.press('d')
+                keyboard.release('a')
+            if fishsymbol.is_right():
+                print("A wird gehalten")
                 keyboard.press('a')
-        else:
-            print("Taste wird losgelassen")
+                keyboard.release('d')
+        elif fishDetection.hasPullingBar():
+            print("Fisch einziehen")
             keyboard.release('a')
             keyboard.release('d')
-        print("Warte bis nächste runde")
-        time.sleep(0.2)
-    print("Taste wird losgelassen")
+            mouse.press('left')
+        elif fishDetection.finishedPullingBar():
+            print("Fisch einziehen beenden")
+            time.sleep(0.5)
+            mouse.release('left')
+            time.sleep(0.5)
+            print("Fisch eingezogen")
+            break
+        else:
+            if start and (time.time() - start) > 5:
+                print("Zeit überschritten")
+                break
+        print("Warte auf nächstes Bild")
+        time.sleep(1)
+    fishDetection.stop()
+    print("Alle Tasten werden losgelassen")
     keyboard.release('a')
     keyboard.release('d')
-    print("Fischerkennung beendet")
-    fishDetection.stop()
+    mouse.release('left')
