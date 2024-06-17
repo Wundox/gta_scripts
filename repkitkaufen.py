@@ -20,9 +20,9 @@ def tankeöffnen():
 
 
 def repkitkaufen():
-    tankeöffnen()
-    warten()
     for i in range(int(choice_repkit)):
+        tankeöffnen()
+        warten()
         mouse.move(1016, 602, absolute=True)
         warten()
         counterLoop = 0
@@ -30,7 +30,7 @@ def repkitkaufen():
             mouse.click('left')
             if stop == True:
                 break
-            time.sleep(0.6)
+            time.sleep(0.53)
             counterLoop += 1
         print("10 stück wurden gekauft")
         warten()
@@ -46,7 +46,7 @@ def kanisterkaufen():
         mouse.click('left')
         if stop == True:
             break
-        time.sleep(0.6)
+        time.sleep(0.53)
     print(f"{choice_kanister} stück Kanister wurden gekauft")
     warten()
     kaufbestätigen()
