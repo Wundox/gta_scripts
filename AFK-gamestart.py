@@ -744,15 +744,16 @@ def hauserkennung():
         print("Haus nicht erkannt")
         print_hour_and_minute()
 
+# In Bank App, Bezahlung Haus Klicken
+
 
 def bankapphausbezhalen():
     print("Haus bezahlen")
     log_to_file("Haus bezahlen")
-    # In Bank auf Haus bezahlen zeihen und klick # Fertig
     if speicherZustand.read_resolution() == '1920x1080':  # fertig
-        pyautogui.moveTo(1464, 559, duration=0.5)
+        pyautogui.moveTo(1643, 472, duration=0.5)
     elif speicherZustand.read_resolution() == '800x600':  # fertig
-        pyautogui.moveTo(1173, 623, duration=0.5)
+        pyautogui.moveTo(1252, 581, duration=0.5)
     else:
         print('falsche auflösung')
     warten()
