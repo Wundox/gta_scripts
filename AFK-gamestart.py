@@ -222,6 +222,11 @@ def password():
     keyboard.write(speicherZustand.read_password())
     warten()
     print("Accoount wird eingeloggt.")
+    LoginButton()
+    print("Login Fertig.")
+
+
+def LoginButton():
     if speicherZustand.read_resolution() == '1920x1080':
         pyautogui.moveTo(651, 678, duration=0.5)
     elif speicherZustand.read_resolution() == '800x600':
@@ -231,7 +236,6 @@ def password():
 
     warten()
     mouse.click('left')
-    print("Login Fertig.")
 
 
 def pixelabfrage(game_coords):
@@ -1032,14 +1036,13 @@ def IstServerFull():
             coord = [1094, 561, 1095, 562]
         else:
             print('falsche auflösung')
+        warten()
         if IsServerFull(coord):
             log_to_file("Server Full erneut login")
             print_hour_and_minute()
             print("Server ist überfüllt. Erneuter Login wird durchgeführt.")
             warten()
-            pyautogui.moveTo(651, 678, duration=0.5)
-            warten()
-            mouse.click('left')
+            LoginButton()
         else:
             print_hour_and_minute()
             break
@@ -1096,7 +1099,7 @@ while True:
         warten()
         RageMPconnenct()
         # print("Warten 300 Sekunden.")
-        time.sleep(60)
+        time.sleep(120)
         print("Fertig mit warten, login wird abgefragt.")
         loginfertig()
         warten()
