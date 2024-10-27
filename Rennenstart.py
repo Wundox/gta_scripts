@@ -13,6 +13,14 @@ def warten():
     time.sleep(0.5)
 
 
+def wdrücken():
+    time.sleep(0.035)
+
+
+def tasten():
+    time.sleep(0.035)
+
+
 def start_event():
     global stop
     stop = False
@@ -41,7 +49,7 @@ while True:
         pyautogui.press("7")
         warten()
         # auf Name ziehen
-        mouse.move(940, 519, absolute=True)
+        mouse.move(953, 526, absolute=True)
         warten()
         mouse.click("left")
         # mouse.release('left')
@@ -51,7 +59,7 @@ while True:
             break
 
         # auf weiter klicken
-        mouse.move(1036, 610, absolute=True)
+        mouse.move(999, 574, absolute=True)
         warten()
         mouse.click("left")
         # mouse.release('left')
@@ -72,7 +80,7 @@ while True:
         pyautogui.typewrite("0")
         warten()
 
-        mouse.move(1036, 622, absolute=True)
+        mouse.move(995, 581, absolute=True)
         warten()
         mouse.click("left")
         warten()
@@ -114,22 +122,22 @@ while True:
         warten()
 
         keyboard.press('w')
-        time.sleep(0.035)
+        wdrücken()
         keyboard.release('w')
         warten()
 
         keyboard.press('enter')
-        time.sleep(0.01)
+        tasten()
         keyboard.release('enter')
         keyboard.press('esc')
-        time.sleep(0.1)
+        tasten()
         keyboard.release('esc')
-        time.sleep(0.1)
+        tasten()
 
         keyboard.press('esc')
-        time.sleep(0.1)
+        tasten()
         keyboard.release('esc')
-        time.sleep(0.1)
+        tasten()
         time.sleep(1)
         # keyboard.press('esc')
         # time.sleep(0.1)
