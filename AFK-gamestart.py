@@ -519,9 +519,9 @@ def Investion8Stunden():
     warten()
     # annhemen
     if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(1041, 638, duration=0.5)
+        pyautogui.moveTo(870, 708, duration=0.5)
     elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(1001, 578, duration=0.5)
+        pyautogui.moveTo(925, 612, duration=0.5)
     else:
         print('falsche auflösung')
 
