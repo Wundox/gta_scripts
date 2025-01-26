@@ -50,11 +50,12 @@ def inColorRange(inputPixel, minPixelRange, maxPixelRange):
 
 
 class GamesSaveState:
-    def __init__(self, password='', path='', resolution='1920x1080', waittime='15'):
+    def __init__(self, password='', path='', resolution='1920x1080', waittime='15', relogtime=''):
         self.password = password
         self.path = path
         self.resolution = resolution
         self.waittime = waittime
+        self.relogtime = relogtime
         self.create()
 
     def read_waittime(self):
@@ -62,6 +63,12 @@ class GamesSaveState:
 
     def write_waittime(self, waittime):
         self.waittime = waittime
+
+    def read_relogtime(self):
+        return self.relogtime
+
+    def write_relogtime(self, relogtime):
+        self.relogtime = relogtime
 
     def read_resolution(self):
         return self.resolution
@@ -111,6 +118,7 @@ class GamesSaveState:
             "path": self.path,
             "resolution": self.resolution,
             "waittime": self.waittime,
+            "Relogtime": self.relogtime,
         }
 
     def save(self):
@@ -129,11 +137,14 @@ class GamesSaveState:
             tmp = json.load(file)
             self.password = self._config_read_checker(
                 tmp, 'password', self.password)
-            self.path = self._config_read_checker(tmp, 'path', self.path)
+            self.path = self._config_read_checker(
+                tmp, 'path', self.path)
             self.resolution = self._config_read_checker(
                 tmp, 'resolution', self.resolution)
             self.waittime = self._config_read_checker(
                 tmp, 'waittime', self.waittime)
+            self.relogtime = self._config_read_checker(
+                tmp, 'relogtime', self.relogtime)
 
     def config_path(self):
         return os.path.join(os.getenv('APPDATA'), 'grand_afk_game_start')
@@ -167,6 +178,23 @@ def prepare() -> GamesSaveState:
             speicherZustand.write_waittime('15')
     print('Verwende Zeit: ' + str(speicherZustand.read_waittime()), 'sekunden.')
     log_to_file("Verwendete Zeit = " + str(speicherZustand.read_waittime()))
+
+    print('Willst du um 15 Uhr und um 20Uhr ein Relog machen?')
+    print('    1. Für JA')
+    print('    2. Für NEIN')
+    current_relog = input('Zahl eingeben: ')
+    speicherZustand.write_relogtime(f"{current_relog}")
+    match int(current_relog):
+        case 1:
+            speicherZustand.write_relogtime('JA')
+            print('"JA" wird gespeicher' +
+                  str(speicherZustand.read_resolution()))
+        case 2:
+            speicherZustand.write_resolution('NEIN')
+            print('"NEIN" wird gespeicher' +
+                  str(speicherZustand.read_resolution()))
+        case 3:
+            quit()
 
     if isSpielAn([1870, 50, 1880, 55]):
         speicherZustand.write_resolution('1920x1080')
@@ -965,7 +993,7 @@ def solangeSpielAktivIst():
         print(counter)
 
         if counter % 113 == 0:
-            print(" Im Counter zählerr")
+            print("Charakter wird bewegt!")
             PressW()
             time.sleep(1)
             PressS()
@@ -997,11 +1025,16 @@ def solangeSpielAktivIst():
 
         # 15 Uhr Relog
         # 20 Uhr Relog
-        if istImZeitraum((15, 1), (15, 2)) or istImZeitraum((20, 1), (20, 1)):
-            log_to_file("15:00Uhr oder 20:01Uhr Relog für Speicherpunkt")
-            print("15:00Uhr oder 20:01Uhr Relog für Speicherpunkt")
-            SpielBeenden()
-            time.sleep(120)
+        if istImZeitraum((15, 1), (15, 2)) or istImZeitraum((20, 1), (4, 1)):
+            if speicherZustand.read_relogtime == 'JA':
+                log_to_file("15:00Uhr oder 20:01Uhr Relog für Speicherpunkt")
+                print("15:00Uhr oder 20:01Uhr Relog für Speicherpunkt")
+                # SpielBeenden()
+                time.sleep(120)
+            elif speicherZustand.read_relogtime == 'NEIN':
+                time.sleep(120)
+            else:
+                print('falsche angabe')
 
         if istImZeitraum((17, 0), (17, 1)) or istImZeitraum((23, 0), (23, 1)):
             Tagesinvestabholen()
@@ -1013,7 +1046,7 @@ def solangeSpielAktivIst():
             print("80 Std Abholen")
             Geld80std()
             time.sleep(120)
-
+    warten()
 
 def escbisspielbeginn():
     for x in range(10):
@@ -1100,7 +1133,10 @@ while True:
         # print("warten")
 
     while stop == False:
-        solangeSpielAktivIst()
+        for x in range(4):
+            print("Ist Spiel aktiv?")
+            warten()
+            solangeSpielAktivIst()
         warten()
         SpielBeenden()
         warten()
