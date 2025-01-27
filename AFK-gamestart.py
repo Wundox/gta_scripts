@@ -678,9 +678,9 @@ def Geld80std():
 
     # Auf werbeprogramm ziehen und klicken
     if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(1795, 1015, duration=0.5)
+        pyautogui.moveTo(1901, 1015, duration=0.5)
     elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(1314, 807, duration=0.5)
+        pyautogui.moveTo(1355, 819, duration=0.5)
     else:
         print('falsche auflösung')
     warten()
@@ -689,9 +689,9 @@ def Geld80std():
 
     # Einsammeln ziehen und drücken
     if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(1488, 915, duration=0.5)
+        pyautogui.moveTo(1419, 914, duration=0.5)
     elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(1177, 695, duration=0.5)
+        pyautogui.moveTo(1155, 694, duration=0.5)
     else:
         print('falsche auflösung')
     warten()
@@ -1000,6 +1000,11 @@ def solangeSpielAktivIst():
 
             counter = 0
 
+        if time.localtime().tm_min == 59:
+            log_to_file("Paycheck wir abgewartet")
+            print_hour_and_minute()
+            time.sleep(80)
+
         # Server Neustart
         if istImZeitraum((4, 0), (4, 1)):
             log_to_file("4 Uhr Server Neustart")
@@ -1046,7 +1051,6 @@ def solangeSpielAktivIst():
             print("80 Std Abholen")
             Geld80std()
             time.sleep(120)
-    warten()
 
 def escbisspielbeginn():
     for x in range(10):
@@ -1133,10 +1137,7 @@ while True:
         # print("warten")
 
     while stop == False:
-        for x in range(4):
-            print("Ist Spiel aktiv?")
-            warten()
-            solangeSpielAktivIst()
+        solangeSpielAktivIst()
         warten()
         SpielBeenden()
         warten()
