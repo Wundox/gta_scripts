@@ -67,12 +67,12 @@ def inventar():
     keyboard.release('tab')
     warten()
     # inventar 1 slot
-    mouse.move(326, 250, absolute=True)
+    mouse.move(76, 378, absolute=True)
     warten()
     mouse.press('left')
     warten()
     # auto 1 slot
-    mouse.move(1039, 430, absolute=1)
+    mouse.move(1312, 383, absolute=1)
     warten()
     mouse.release('left')
     warten()

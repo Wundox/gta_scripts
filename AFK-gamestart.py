@@ -1,9 +1,7 @@
 import json
 import os
-import random
 import subprocess
 import time
-from pathlib import Path
 
 import clipboard
 import keyboard
@@ -1051,6 +1049,7 @@ def solangeSpielAktivIst():
             print("80 Std Abholen")
             Geld80std()
             time.sleep(120)
+
 
 def escbisspielbeginn():
     for x in range(10):
