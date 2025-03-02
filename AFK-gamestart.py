@@ -1,6 +1,5 @@
 import json
 import os
-import subprocess
 import time
 
 import clipboard
@@ -48,31 +47,23 @@ def inColorRange(inputPixel, minPixelRange, maxPixelRange):
 
 
 class GamesSaveState:
-    def __init__(self, password='', path='', resolution='1920x1080', waittime='15', relogtime=''):
+    def __init__(self, password='', path='', resolution='1920x1080', waittime='15', relogtime='', autostart=''):
         self.password = password
         self.path = path
         self.resolution = resolution
         self.waittime = waittime
         self.relogtime = relogtime
+        self.autostart = autostart
         self.create()
 
     def read_waittime(self):
         return self.waittime
 
-    def write_waittime(self, waittime):
-        self.waittime = waittime
-
     def read_relogtime(self):
         return self.relogtime
 
-    def write_relogtime(self, relogtime):
-        self.relogtime = relogtime
-
     def read_resolution(self):
         return self.resolution
-
-    def write_resolution(self, resolution):
-        self.resolution = resolution
 
     def read_password(self):
         return self.password
@@ -80,11 +71,26 @@ class GamesSaveState:
     def read_path(self):
         return self.path
 
+    def read_autostart(self):
+        return self.autostart
+
+    def write_waittime(self, waittime):
+        self.waittime = waittime
+
+    def write_relogtime(self, relogtime):
+        self.relogtime = relogtime
+
+    def write_resolution(self, resolution):
+        self.resolution = resolution
+
     def write_password(self, password):
         self.password = password
 
     def write_path(self, path):
         self.path = path
+
+    def write_autostart(self, autostart):
+        self.autostart = autostart
 
     def paste_password(self):
         keyboard.wait("ctrl+v")
@@ -116,7 +122,8 @@ class GamesSaveState:
             "path": self.path,
             "resolution": self.resolution,
             "waittime": self.waittime,
-            "Relogtime": self.relogtime,
+            "relogtime": self.relogtime,
+            "autostart": self.autostart,
         }
 
     def save(self):
@@ -143,6 +150,8 @@ class GamesSaveState:
                 tmp, 'waittime', self.waittime)
             self.relogtime = self._config_read_checker(
                 tmp, 'relogtime', self.relogtime)
+            self.autostart = self._config_read_checker(
+                tmp, 'autostart', self.autostart)
 
     def config_path(self):
         return os.path.join(os.getenv('APPDATA'), 'grand_afk_game_start')
@@ -153,6 +162,11 @@ class GamesSaveState:
 
 def prepare() -> GamesSaveState:
     speicherZustand = GamesSaveState()
+    if speicherZustand.read_autostart() == "JA":
+        print("Autostart wird verwenden")
+        log_to_file("Autostart wird verwenden")
+        return speicherZustand
+
     if speicherZustand.password_empty():
         # new_password = input("Bitte geben Sie ein neues Passwort ein: ")
         print("Bitte schreiben Sie ein Password ein oder (mit STRG+V): ")
@@ -181,18 +195,25 @@ def prepare() -> GamesSaveState:
     print('    1. Für JA')
     print('    2. Für NEIN')
     current_relog = input('Zahl eingeben: ')
-    speicherZustand.write_relogtime(f"{current_relog}")
     match int(current_relog):
         case 1:
             speicherZustand.write_relogtime('JA')
-            print('"JA" wird gespeicher' +
-                  str(speicherZustand.read_resolution()))
         case 2:
-            speicherZustand.write_resolution('NEIN')
-            print('"NEIN" wird gespeicher' +
-                  str(speicherZustand.read_resolution()))
-        case 3:
-            quit()
+            speicherZustand.write_relogtime('NEIN')
+
+    print(speicherZustand.read_relogtime()+'wird gespeicher')
+
+    print('Willst Autostart aktivieren?')
+    print('    1. Für JA')
+    print('    2. Für NEIN')
+    current_relog = input('Zahl eingeben: ')
+    match int(current_relog):
+        case 1:
+            speicherZustand.write_autostart('JA')
+        case 2:
+            speicherZustand.write_autostart('NEIN')
+
+    print(speicherZustand.read_autostart()+'wird gespeicher')
 
     if isSpielAn([1870, 50, 1880, 55]):
         speicherZustand.write_resolution('1920x1080')
@@ -1127,7 +1148,8 @@ def loginfertig():
 
 
 speicherZustand = prepare()
-
+if speicherZustand.read_autostart() == "JA":
+    stop = False
 while True:
     # warten bis eingabe dann start
     print("Zum Starten X drücken")
