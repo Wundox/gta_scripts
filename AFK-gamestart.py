@@ -184,7 +184,6 @@ def prepare() -> GamesSaveState:
     print('    Gibt eine Zeit ein zwischen den ausführungen. Am besten für Langsame PCs ca 20sek ')
     print('    0. Standard 15 Sekunden')
     current_wait = input('Zahl eingeben: ')
-    speicherZustand.write_waittime(f"{current_wait}")
     match int(current_wait):
         case 0:
             speicherZustand.write_waittime('15')
@@ -202,6 +201,7 @@ def prepare() -> GamesSaveState:
             speicherZustand.write_relogtime('NEIN')
 
     print(speicherZustand.read_relogtime()+'wird gespeicher')
+    log_to_file(speicherZustand.read_relogtime()+'wird gespeicher')
 
     print('Willst Autostart aktivieren?')
     print('    1. Für JA')
@@ -214,6 +214,7 @@ def prepare() -> GamesSaveState:
             speicherZustand.write_autostart('NEIN')
 
     print(speicherZustand.read_autostart()+'wird gespeicher')
+    log_to_file(speicherZustand.read_autostart()+'wird gespeicher')
 
     if isSpielAn([1870, 50, 1880, 55]):
         speicherZustand.write_resolution('1920x1080')
@@ -223,8 +224,6 @@ def prepare() -> GamesSaveState:
         print('Verwende Auflösung: ' + str(speicherZustand.read_resolution()))
         print('Kein aktives Spiel erkannt')
         print('Bitte benutze eins von den Verfügbaren Auflösungen:')
-        print('    0. Letzte Einstellung ' +
-              str(speicherZustand.read_resolution()))
         print('    1. 1920x1080')
         print('    2. 800x600 randlos')
         print('    3. Quit')
@@ -232,21 +231,12 @@ def prepare() -> GamesSaveState:
         match int(current_res):
             case 1:
                 speicherZustand.write_resolution('1920x1080')
-                print('Verwende Auflösung: ' +
-                      str(speicherZustand.read_resolution()))
             case 2:
                 speicherZustand.write_resolution('800x600')
-                print('Verwende Auflösung: ' +
-                      str(speicherZustand.read_resolution()))
-            case 3:
-                quit()
-            case 0:
-                print('Verwende Auflösung: ' +
-                      str(speicherZustand.read_resolution()))
 
-    print('Verwende Auflösung: ' + str(speicherZustand.read_resolution()))
-    log_to_file("Verwendete auflösung = " +
-                str(speicherZustand.read_resolution()))
+    print(speicherZustand.read_resolution()+'Verwende Auflösung')
+    log_to_file(speicherZustand.read_resolution()+'Verwende Auflösung')
+
     speicherZustand.save()
     return speicherZustand
 
@@ -377,8 +367,10 @@ def startding():
     print("Rage wird gestarted.")
     print_hour_and_minute()
     start_path = speicherZustand.read_path()
-    start_cmd = "start \"RageMp\" /d C:\\RAGEMP {execution_path}".format(
-        execution_path=start_path)
+    exec_path = "\\".join(start_path.split("\\")[:2])
+    start_cmd = "start \"RageMp\" /d {exec_path} {execution_path}".format(
+        execution_path=start_path,
+        exec_path=exec_path)
     os.system(start_cmd)
     # os.system("switch.bat \"RageMp\"")
 
@@ -521,9 +513,9 @@ def Investion8Stunden():
     warten()
     # investion moven und klicken
     if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(1713, 1009, duration=0.5)
+        pyautogui.moveTo(1635, 1011, duration=0.5)
     elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(1277, 811, duration=0.5)
+        pyautogui.moveTo(1242, 810, duration=0.5)
     else:
         print('falsche auflösung')
     warten()
@@ -1147,26 +1139,27 @@ def loginfertig():
         time.sleep(1)
 
 
-speicherZustand = prepare()
-if speicherZustand.read_autostart() == "JA":
-    stop = False
-while True:
-    # warten bis eingabe dann start
-    print("Zum Starten X drücken")
-    while stop == True:
-        time.sleep(1)
-        # print("warten")
+if __name__ == "__main__":
+    speicherZustand = prepare()
+    if speicherZustand.read_autostart() == "JA":
+        stop = False
+    while True:
+        # warten bis eingabe dann start
+        print("Zum Starten X drücken")
+        while stop == True:
+            time.sleep(1)
+            # print("warten")
 
-    while stop == False:
-        solangeSpielAktivIst()
-        warten()
-        SpielBeenden()
-        warten()
-        startding()
-        warten()
-        RageMPconnenct()
-        # print("Warten 300 Sekunden.")
-        time.sleep(20)
-        print("Fertig mit warten, login wird abgefragt.")
-        loginfertig()
-        warten()
+        while stop == False:
+            solangeSpielAktivIst()
+            warten()
+            SpielBeenden()
+            warten()
+            startding()
+            warten()
+            RageMPconnenct()
+            # print("Warten 300 Sekunden.")
+            time.sleep(20)
+            print("Fertig mit warten, login wird abgefragt.")
+            loginfertig()
+            warten()
