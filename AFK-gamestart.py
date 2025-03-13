@@ -200,8 +200,8 @@ def prepare() -> GamesSaveState:
         case 2:
             speicherZustand.write_relogtime('NEIN')
 
-    print(speicherZustand.read_relogtime()+'wird gespeicher')
-    log_to_file(speicherZustand.read_relogtime()+'wird gespeicher')
+    print(speicherZustand.read_relogtime()+' wird gespeicher')
+    log_to_file(speicherZustand.read_relogtime()+' wird gespeicher')
 
     print('Willst Autostart aktivieren?')
     print('    1. Für JA')
@@ -213,8 +213,8 @@ def prepare() -> GamesSaveState:
         case 2:
             speicherZustand.write_autostart('NEIN')
 
-    print(speicherZustand.read_autostart()+'wird gespeicher')
-    log_to_file(speicherZustand.read_autostart()+'wird gespeicher')
+    print(speicherZustand.read_autostart()+' wird gespeicher')
+    log_to_file(speicherZustand.read_autostart()+' wird gespeicher')
 
     if isSpielAn([1870, 50, 1880, 55]):
         speicherZustand.write_resolution('1920x1080')
@@ -234,8 +234,8 @@ def prepare() -> GamesSaveState:
             case 2:
                 speicherZustand.write_resolution('800x600')
 
-    print(speicherZustand.read_resolution()+'Verwende Auflösung')
-    log_to_file(speicherZustand.read_resolution()+'Verwende Auflösung')
+    print(speicherZustand.read_resolution()+' Verwende Auflösung')
+    log_to_file(speicherZustand.read_resolution()+' Verwende Auflösung')
 
     speicherZustand.save()
     return speicherZustand
@@ -342,6 +342,19 @@ def IstHausda(coord):  # fertig
         log_to_file(f"Haus erkannt. R:G:B {pixel}")
         return True
     log_to_file(f"Kein Haus erkannt. R:G:B {pixel}")
+    return False
+
+
+def investfertig(coord):
+    pixel = pixelabfrage(coord)
+    minColor = [248, 218, 37]  # Minimun farbe range
+    maxColor = [255, 230, 47]  # Maximum farbe range
+    if inColorRange(pixel, minColor, maxColor):
+        log_to_file(f"Invest ist Fertig. R:G:B {pixel}")
+        print("Invest ist Fertig")
+        return True
+    log_to_file(f"Invest ist nicht Fertig. R:G:B {pixel}")
+    print("Invest ist nicht Fertig")
     return False
 
 
@@ -504,9 +517,9 @@ def escbis20sdtSlider():  # noch nicht fertig
             break
 
 
-def Investion8Stunden():
-    print("Investion 8 Stunden wird angenommen")
-    log_to_file("8 Stunden invest wird angenommen")
+def Tagesinvest():
+    print("Investion 8 Stunden wird abgeholt")
+    log_to_file("8 Stunden invest wird abgeholt")
     # handy rausholen
     warten()
     keyboard.press_and_release('k')
@@ -545,80 +558,45 @@ def Investion8Stunden():
     warten()
     mouse.click('left')
     warten()
-    # 8 stunden invest
+
+    # Überprüfen ob Gewinn abhol bereit ist /gelb
+    coord = []
     if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(1451, 866, duration=0.5)
+        coord = [1531, 861, 1532, 862]
     elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(1159, 674, duration=0.5)
+        coord = [1198, 671, 1199, 672]
     else:
         print('falsche auflösung')
 
-    warten()
-    mouse.click('left')
-    warten()
+    # 8 stunden invest
+
     # annhemen
-    if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(870, 708, duration=0.5)
-    elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(925, 612, duration=0.5)
-    else:
-        print('falsche auflösung')
+    if not investfertig(coord):
+        if speicherZustand.read_resolution() == '1920x1080':
+            pyautogui.moveTo(1451, 866, duration=0.5)
+        elif speicherZustand.read_resolution() == '800x600':
+            pyautogui.moveTo(1159, 674, duration=0.5)
+        else:
+            print('falsche auflösung')
 
-    warten()
-    mouse.click('left')
-    warten()
-    # rausgeben
-    keyboard.press_and_release('esc')
+        warten()
+        mouse.click('left')
 
+        if speicherZustand.read_resolution() == '1920x1080':
+            pyautogui.moveTo(870, 708, duration=0.5)
+        elif speicherZustand.read_resolution() == '800x600':
+            pyautogui.moveTo(925, 612, duration=0.5)
+        else:
+            print('falsche auflösung')
+    else:
 
-def Tagesinvestabholen():
-    print("Investion 8 Stunden wird abgeholt")
-    log_to_file("8 Stunden invest wird abgeholt")
-    # handy rausholen
-    warten()
-    keyboard.press_and_release('k')
-    warten()
-    # investion moven und klicken
-    if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(1713, 1009, duration=0.5)
-    elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(1277, 811, duration=0.5)
-    else:
-        print('falsche auflösung')
-    warten()
-    mouse.click('left')
-    warten()
-    # auf tagsüber moven und klicken
-    if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(94, 537, duration=0.5)
-    elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(598, 535, duration=0.5)
-    else:
-        print('falsche auflösung')
+        if speicherZustand.read_resolution() == '1920x1080':
+            pyautogui.moveTo(1451, 866, duration=0.5)
+        elif speicherZustand.read_resolution() == '800x600':
+            pyautogui.moveTo(1159, 674, duration=0.5)
+        else:
+            print('falsche auflösung')
 
-    warten()
-    mouse.click('left')
-    warten()
-    # scrollbar moven und klicken
-    if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(1608, 965, duration=0.5)
-    elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(1230, 697, duration=0.5)
-    else:
-        print('falsche auflösung')
-
-    warten()
-    mouse.click('left')
-    warten()
-    mouse.click('left')
-    warten()
-    # 8 stunden invest
-    if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(1451, 866, duration=0.5)
-    elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(1159, 674, duration=0.5)
-    else:
-        print('falsche auflösung')
     warten()
     mouse.click('left')
     warten()
@@ -1026,7 +1004,7 @@ def solangeSpielAktivIst():
         # # Tagesinvest
         if istImZeitraum((5, 1), (5, 3)) or istImZeitraum((5, 40), (5, 41)):
             log_to_file("05:01Uhr oder 05:40Uhr Invest und Fam")
-            Investion8Stunden()
+            Tagesinvest()
             print_hour_and_minute()
             FamAufgabe4Stunden()
             print_hour_and_minute()
@@ -1041,7 +1019,7 @@ def solangeSpielAktivIst():
 
         # 15 Uhr Relog
         # 20 Uhr Relog
-        if istImZeitraum((15, 1), (15, 2)) or istImZeitraum((20, 1), (4, 1)):
+        if istImZeitraum((15, 1), (15, 2)) or istImZeitraum((20, 1), (20, 2)):
             if speicherZustand.read_relogtime == 'JA':
                 log_to_file("15:00Uhr oder 20:01Uhr Relog für Speicherpunkt")
                 print("15:00Uhr oder 20:01Uhr Relog für Speicherpunkt")
@@ -1053,7 +1031,7 @@ def solangeSpielAktivIst():
                 print('falsche angabe')
 
         if istImZeitraum((17, 0), (17, 1)) or istImZeitraum((23, 0), (23, 1)):
-            Tagesinvestabholen()
+            Tagesinvest()
             escbisspielbeginn()
             time.sleep(120)
 
