@@ -8,7 +8,7 @@ from pynput import mouse
 
 # Flags und Einstellungen
 spamming_enabled = False
-use_mouse_mode = False
+use_mouse_mode = True  # Standardmäßig aktiviert
 left_mouse_pressed = False
 interval_ms = 150
 selected_key = 'p'
@@ -25,7 +25,10 @@ def spam_loop():
             interval = interval_ms / 1000.0
             key = selected_key
         if active:
-            keyboard.press_and_release(key)
+            try:
+                keyboard.press_and_release(key)
+            except:
+                pass
             time.sleep(interval)
         else:
             time.sleep(0.01)
@@ -44,7 +47,7 @@ def update_status():
     status_label.config(text=f"Status: {status}", foreground=color)
 
 
-def toggle_spam_hotkey(e):
+def toggle_spam_hotkey(e=None):
     global spamming_enabled
     with lock:
         spamming_enabled = not spamming_enabled
@@ -58,7 +61,7 @@ def on_interval_change(*args):
         with lock:
             interval_ms = max(1, val)
         interval_entry.config(foreground="black")
-    except:
+    except ValueError:
         interval_entry.config(foreground="red")
 
 
@@ -75,55 +78,73 @@ def on_key_select(event):
 
 
 def on_close():
-    mouse_listener.stop()
-    root.destroy()
+    try:
+        mouse_listener.stop()
+    except:
+        pass
+    root.quit()
 
 
 # GUI erstellen
 root = tk.Tk()
 root.title("Ping-Spammer")
+root.resizable(False, False)
 
-frame = ttk.Frame(root, padding=10)
+style = ttk.Style()
+style.theme_use('clam')  # Modernes Theme
+style.configure("TLabel", font=("Segoe UI", 10))
+style.configure("TButton", font=("Segoe UI", 10))
+style.configure("TCheckbutton", font=("Segoe UI", 10))
+style.configure("TCombobox", font=("Segoe UI", 10))
+
+frame = ttk.Frame(root, padding=15)
 frame.grid()
 
-status_label = ttk.Label(frame, text="Status: Deaktiviert", foreground="red")
-status_label.grid(row=0, column=0, columnspan=2, pady=5)
+status_label = ttk.Label(frame, text="Status: Deaktiviert",
+                         foreground="red", font=("Segoe UI", 11, "bold"))
+status_label.grid(row=0, column=0, columnspan=2, pady=(0, 10))
 
-mode_var = tk.BooleanVar()
+mode_var = tk.BooleanVar(value=True)  # Standardmäßig aktiviert
 mode_checkbox = ttk.Checkbutton(
     frame, text="Maus-Modus (halten zum Spammen)",
     variable=mode_var, command=on_mode_change
 )
-mode_checkbox.grid(row=1, column=0, columnspan=2, pady=5)
+mode_checkbox.grid(row=1, column=0, columnspan=2, pady=5, sticky='w')
 
-ttk.Label(frame, text="Intervall (ms):").grid(row=2, column=0, sticky='e')
+ttk.Label(frame, text="Intervall (ms):").grid(
+    row=2, column=0, sticky='e', pady=5)
 interval_entry = ttk.Entry(frame, width=10)
-interval_entry.insert(0, "150")
-interval_entry.grid(row=2, column=1, sticky='w')
+interval_entry.insert(0, str(interval_ms))
+interval_entry.grid(row=2, column=1, sticky='w', pady=5)
 interval_entry.bind("<KeyRelease>", on_interval_change)
 
-ttk.Label(frame, text="Taste zum Spammen:").grid(row=3, column=0, sticky='e')
+ttk.Label(frame, text="Taste zum Spammen:").grid(
+    row=3, column=0, sticky='e', pady=5)
 key_combo = ttk.Combobox(frame, values=[
     'a', 'b', 'c', 'd', 'e', 'f', 'g',
     'h', 'i', 'j', 'k', 'l', 'm', 'n',
     'o', 'p', 'q', 'r', 's', 't', 'u',
     'v', 'w', 'x', 'y', 'z',
     'space', 'enter', 'tab', 'shift', 'ctrl'
-], state='readonly')
-key_combo.set('p')
-key_combo.grid(row=3, column=1, sticky='w')
+], state='readonly', width=10)
+key_combo.set(selected_key)
+key_combo.grid(row=3, column=1, sticky='w', pady=5)
 key_combo.bind("<<ComboboxSelected>>", on_key_select)
 
-ttk.Label(frame, text="Hotkey: F8").grid(row=4, column=0, columnspan=2, pady=5)
-ttk.Label(frame, text="Zum Beenden: Strg+C oder Fenster schließen").grid(row=5,
-                                                                         column=0, columnspan=2)
+ttk.Label(frame, text="Hotkey zum Ein/Ausschalten:").grid(row=4,
+                                                          column=0, sticky='e', pady=5)
+ttk.Label(frame, text="F8", font=("Segoe UI", 10, "bold")
+          ).grid(row=4, column=1, sticky='w', pady=5)
+
+ttk.Label(frame, text="Zum Beenden: Fenster schließen").grid(row=5,
+                                                             column=0, columnspan=2, pady=(10, 0))
 
 root.protocol("WM_DELETE_WINDOW", on_close)
 
 # Listener starten
 mouse_listener = mouse.Listener(on_click=on_click)
 mouse_listener.start()
-keyboard.on_press_key("f8", toggle_spam_hotkey)
+keyboard.add_hotkey("f8", toggle_spam_hotkey)
 
 # Spam-Thread starten
 threading.Thread(target=spam_loop, daemon=True).start()
