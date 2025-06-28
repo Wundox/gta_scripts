@@ -184,11 +184,13 @@ def prepare() -> GamesSaveState:
     print('    Gibt eine Zeit ein zwischen den ausführungen. Am besten für Langsame PCs ca 20sek ')
     print('    0. Standard 15 Sekunden')
     current_wait = input('Zahl eingeben: ')
+    speicherZustand.write_waittime(f"{current_wait}")
     match int(current_wait):
         case 0:
             speicherZustand.write_waittime('15')
     print('Verwende Zeit: ' + str(speicherZustand.read_waittime()), 'sekunden.')
     log_to_file("Verwendete Zeit = " + str(speicherZustand.read_waittime()))
+
 
     print('Willst du um 15 Uhr und um 20Uhr ein Relog machen?')
     print('    1. Für JA')
@@ -373,6 +375,9 @@ def SpielBeenden():
     os.system("taskkill /f /im PlayGTAV.exe")
     warten()
     os.system("taskkill /f /im updater.exe")
+    warten()
+    os.system("taskkill /f /im steam.exe")
+
 
 
 def startding():
@@ -385,6 +390,7 @@ def startding():
         execution_path=start_path,
         exec_path=exec_path)
     os.system(start_cmd)
+    warten()
     # os.system("switch.bat \"RageMp\"")
 
 
@@ -689,6 +695,56 @@ def Geld80std():
     mouse.click('left')
     escbisspielbeginn()
 
+def Unternehmenbezhalen():
+    print("Unternehmen bezhalen ")
+    log_to_file("Unternehmen bezhalen")
+    warten()
+    bankapp()
+    warten()
+    # In Bank app auf Unternehmen ziehen und klicken
+    if speicherZustand.read_resolution() == '1920x1080':
+        pyautogui.moveTo(1468, 551, duration=0.5)
+    elif speicherZustand.read_resolution() == '800x600':
+        pyautogui.moveTo(1167, 622, duration=0.5)
+    else:
+        print('falsche auflösung')
+    warten()
+    mouse.click('left')
+    warten()
+    hauserkennung()
+    warten()
+    keyboard.press_and_release('esc')
+    
+
+def bunkerbezahlen():
+    print("Bunker bezahlen")
+    log_to_file("Bunker bezahlen")
+    warten()
+    keyboard.press_and_release('k')
+    warten()
+    # In Bank app auf Bunker ziehen und klicken
+    if speicherZustand.read_resolution() == '1920x1080':
+        pyautogui.moveTo(1636, 911, duration=0.5)
+    elif speicherZustand.read_resolution() == '800x600':
+        pyautogui.moveTo(1239, 773, duration=0.5)
+    else:
+        print('falsche auflösung')
+    warten()
+    mouse.click('left')
+    warten()
+    # Auf Bezahlen für den Bunker ziehen un klicken
+    if speicherZustand.read_resolution() == '1920x1080':
+        pyautogui.moveTo(1524, 336, duration=0.5)
+    elif speicherZustand.read_resolution() == '800x600':
+        pyautogui.moveTo(1201, 451, duration=0.5)
+    else:
+        print('falsche auflösung')
+    warten()
+    mouse.click('left')
+    warten()
+    hauserkennung()
+
+
 # ersten mal weiter wo alle häuser sichtbar
 
 
@@ -729,9 +785,9 @@ def hauserkennung():
         print('falsche auflösung')
     warten()
     if IstHausda(coord):
-        log_to_file("Haus wurde erkannt")
+        log_to_file("Haus/Bunker/Unternehmen wurde erkannt")
         print_hour_and_minute()
-        print("Haus wurde erkannt")
+        print("Haus/Bunker/Unternehmen wurde erkannt")
         # Auf eingabe ziehen und klicken
         if speicherZustand.read_resolution() == '1920x1080':  # fertig
             pyautogui.moveTo(958, 590, duration=0.5)
@@ -751,7 +807,7 @@ def hauserkennung():
 
         # Zahlung bestätigen
         if speicherZustand.read_resolution() == '1920x1080':  # fertig
-            pyautogui.moveTo(884, 647, duration=0.5)
+            pyautogui.moveTo(886, 664, duration=0.5)
         elif speicherZustand.read_resolution() == '800x600':  # fertig
             pyautogui.moveTo(931, 586, duration=0.5)
         else:
@@ -760,12 +816,11 @@ def hauserkennung():
         mouse.click('left')
         warten()
     else:
-        log_to_file("Haus wurde Nicht erkannt")
-        print("Haus nicht erkannt")
+        log_to_file("Haus/Bunker/Unternehmen wurde Nicht erkannt")
+        print("Haus/Bunker/Unternehmen nicht erkannt")
         print_hour_and_minute()
 
 # In Bank App, Bezahlung Haus Klicken
-
 
 def bankapphausbezhalen():
     print("Haus bezahlen")
@@ -780,14 +835,13 @@ def bankapphausbezhalen():
     mouse.click('left')
     warten()
 
-
-def Hausbezahlen():
-    print("Haus bezahlen")
-    log_to_file("Haus bezahlen")
+def bankapp():
+    print("Bank App öffnen")
+    log_to_file("Bank App öffnen")
     warten()
     keyboard.press_and_release('k')
     warten()
-    # Auf bank ziehen und kiklc
+    # Auf bank ziehen und klicken
     if speicherZustand.read_resolution() == '1920x1080':
         pyautogui.moveTo(1554, 817, duration=0.5)
     elif speicherZustand.read_resolution() == '800x600':
@@ -796,6 +850,12 @@ def Hausbezahlen():
         print('falsche auflösung')
     warten()
     mouse.click('left')
+    warten()
+
+def Hausbezahlen():
+    print("Haus bezahlen")
+    log_to_file("Haus bezahlen")
+    bankapp()
     warten()
     Haus1()
     warten()
@@ -994,7 +1054,7 @@ def solangeSpielAktivIst():
             print_hour_and_minute()
             time.sleep(80)
 
-        # Server Neustart
+        #Server Neustart
         if istImZeitraum((4, 0), (4, 1)):
             log_to_file("4 Uhr Server Neustart")
             print_hour_and_minute()
@@ -1011,9 +1071,13 @@ def solangeSpielAktivIst():
             time.sleep(120)
             escbisspielbeginn()
 
-        if istImZeitraum((9, 26), (9, 27)) or istImZeitraum((12, 40), (12, 41)):
+        if istImZeitraum((10, 26), (10, 27)) or istImZeitraum((12, 40), (12, 41)):
             Hausbezahlen()
             keyboard.press_and_release('esc')
+            escbisspielbeginn()
+            Unternehmenbezhalen()
+            escbisspielbeginn()
+            bunkerbezahlen()
             escbisspielbeginn()
             time.sleep(120)
 
