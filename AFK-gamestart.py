@@ -397,6 +397,7 @@ def startding():
 def RageMPconnenct():
     log_to_file("Ragemp Connect")
     print("Auf Grand connecten.")
+    warten()
     print_hour_and_minute()
     pyautogui.moveTo(1357, 217, duration=0.5)
     warten()
@@ -639,24 +640,12 @@ def FamAufgabe4Stunden():
     warten()
     mouse.click('left')
     warten()
-    # Scrollbar
-    if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(1793, 1053, duration=0.5)
-    elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(1307, 815, duration=0.5)
-    else:
-        print('falsche auflösung')
-
-    warten()
-    mouse.click('left')
-    warten()
-    mouse.click('left')
-    warten()
+    
     # 4 stunden aufgabe annhemen
     if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(285, 997, duration=0.5)
+        pyautogui.moveTo(1835, 927, duration=0.5)
     elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(667, 793, duration=0.5)
+        pyautogui.moveTo(1334, 701, duration=0.5)
     else:
         print('falsche auflösung')
 
