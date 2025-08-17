@@ -338,7 +338,7 @@ def IsServerFull(coord):
 
 def IstHausda(coord):  # fertig
     pixel = pixelabfrage(coord)
-    minColor = [150, 140,  30]  # Minimun farbe range
+    minColor = [150, 135,  28]  # Minimun farbe range
     maxColor = [255, 225, 50]  # Maximum farbe range
     if inColorRange(pixel, minColor, maxColor):
         log_to_file(f"Haus erkannt. R:G:B {pixel}")
