@@ -1042,6 +1042,7 @@ def isspielwiklichaus():
     else:
          print("spiel wird beendet")
          log_to_file("spiel wird beendet")
+         SpielBeenden()
 
 # Abfrage ob Charakter gestorben ist 
 def Gestorben():
@@ -1058,7 +1059,7 @@ def Gestorben():
         print("spieler ist gestorben")
         log_to_file("spieler ist gestorben")
         time.sleep(300)
-        # SpielBeenden()
+        SpielBeenden()
     else:
         print("spieler ist nicht gestorben")
         log_to_file("spieler ist nicht gestorben")
@@ -1084,7 +1085,7 @@ def solangeSpielAktivIst():
         # Überpüfen ob Charakter Gestorben ist
         Gestorben()
 
-        if counter % 113 == 0:
+        if counter % 90 == 0:
             print("Charakter wird bewegt!")
             PressW()
             time.sleep(1)
