@@ -1106,7 +1106,7 @@ def solangeSpielAktivIst():
             time.sleep(600)
 
         # # Tagesinvest
-        if istImZeitraum((1, 1), (5, 3)) or istImZeitraum((5, 40), (5, 41)):
+        if istImZeitraum((5, 1), (5, 3)) or istImZeitraum((5, 40), (5, 41)):
             log_to_file("05:01Uhr oder 05:40Uhr Invest und Fam")
             Tagesinvest()
             print_hour_and_minute()
