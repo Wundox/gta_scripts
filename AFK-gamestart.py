@@ -47,13 +47,14 @@ def inColorRange(inputPixel, minPixelRange, maxPixelRange):
 
 
 class GamesSaveState:
-    def __init__(self, password='', path='', resolution='1920x1080', waittime='15', relogtime='', autostart=''):
+    def __init__(self, password='', path='', resolution='1920x1080', waittime='15', relogtime='', autostart='', bunkerspawn=''):
         self.password = password
         self.path = path
         self.resolution = resolution
         self.waittime = waittime
         self.relogtime = relogtime
         self.autostart = autostart
+        self.bunkerspawn = bunkerspawn
         self.create()
 
     def read_waittime(self):
@@ -73,6 +74,9 @@ class GamesSaveState:
 
     def read_autostart(self):
         return self.autostart
+    
+    def read_bunkerspawn(self):
+        return self.bunkerspawn
 
     def write_waittime(self, waittime):
         self.waittime = waittime
@@ -91,6 +95,9 @@ class GamesSaveState:
 
     def write_autostart(self, autostart):
         self.autostart = autostart
+
+    def write_bunkerspawn(self, bunkerspawn):
+        self.bunkerspawn = bunkerspawn
 
     def paste_password(self):
         keyboard.wait("ctrl+v")
@@ -124,6 +131,7 @@ class GamesSaveState:
             "waittime": self.waittime,
             "relogtime": self.relogtime,
             "autostart": self.autostart,
+            "bunkerspawn": self.bunkerspawn,
         }
 
     def save(self):
@@ -152,6 +160,8 @@ class GamesSaveState:
                 tmp, 'relogtime', self.relogtime)
             self.autostart = self._config_read_checker(
                 tmp, 'autostart', self.autostart)
+            self.bunkerspawn = self._config_read_checker(
+                tmp, 'bunkerspawn', self.bunkerspawn)
 
     def config_path(self):
         return os.path.join(os.getenv('APPDATA'), 'grand_afk_game_start')
@@ -204,6 +214,19 @@ def prepare() -> GamesSaveState:
 
     print(speicherZustand.read_relogtime()+' wird gespeicher')
     log_to_file(speicherZustand.read_relogtime()+' wird gespeicher')
+
+    print('Drücke 1 für Bunker spawn oder 2 für Familienhaus spawn')
+    print('    1. Für JA')
+    print('    2. Für NEIN')
+    current_relog = input('Zahl eingeben: ')
+    match int(current_relog):
+        case 1:
+            speicherZustand.write_bunkerspawn('JA')
+        case 2:
+            speicherZustand.write_bunkerspawn('NEIN')
+
+    print(speicherZustand.read_bunkerspawn()+' wird gespeicher')
+    log_to_file(speicherZustand.read_bunkerspawn()+' wird gespeicher')
 
     print('Willst Autostart aktivieren?')
     print('    1. Für JA')
@@ -369,8 +392,6 @@ def Istgestorben(coord):
         log_to_file("Charakter ist Gestorben")
         print("Charakter ist Gestorben")
         return True
-    log_to_file("Charakter ist nicht Gestorben")
-    print("Charakter ist nicht Gestorben")
     return False
 
 def SpielBeenden():
@@ -429,15 +450,30 @@ def RageMPconnenct():
 
 
 def SpawnPunkt():
-    log_to_file("Wird bei familie gespawnt")
-    print("Spawnpunkt am Familienhaus wird ausgewählt.")
-    print_hour_and_minute()
-    if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(197, 595, duration=0.5)
-    elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(640, 562, duration=0.5)
+    if speicherZustand.read_bunkerspawn == 'JA':
+        log_to_file("Wird beim Bunker gespawnt")
+        print("Wird beim Bunker gespawnt")
+        print_hour_and_minute()
+        if speicherZustand.read_resolution() == '1920x1080':
+            pyautogui.moveTo(197, 595, duration=0.5) #fehlt
+        elif speicherZustand.read_resolution() == '800x600':
+            pyautogui.moveTo(895, 778, duration=0.5)
+        else:
+            print('falsche auflösung')
+
+    elif speicherZustand.read_bunkerspawn == 'NEIN':
+        log_to_file("Wird bei familie gespawnt")
+        print("Wird bei familie gespawnt")
+        print_hour_and_minute()
+        if speicherZustand.read_resolution() == '1920x1080':
+            pyautogui.moveTo(197, 595, duration=0.5)
+        elif speicherZustand.read_resolution() == '800x600':
+            pyautogui.moveTo(640, 562, duration=0.5)
+        else:
+            print('falsche auflösung')
     else:
-        print('falsche auflösung')
+        print('falsche angabe')
+    
 
     warten()
     mouse.click('left')
@@ -1062,7 +1098,7 @@ def Gestorben():
         SpielBeenden()
     else:
         print("spieler ist nicht gestorben")
-        log_to_file("spieler ist nicht gestorben")
+
 
 counter = 0
 def solangeSpielAktivIst():
@@ -1076,7 +1112,6 @@ def solangeSpielAktivIst():
         print('falsche auflösung')
     while isSpielAn(coord):
         print_hour_and_minute()
-        log_to_file("Ist im Spiel")
         print("Spiel erkannt")
         time.sleep(3)
         global counter
@@ -1085,18 +1120,20 @@ def solangeSpielAktivIst():
         # Überpüfen ob Charakter Gestorben ist
         Gestorben()
 
-        if counter % 90 == 0:
+        if counter % 50 == 0:
             print("Charakter wird bewegt!")
+            log_to_file("Ist im Spiel")
             PressW()
             time.sleep(1)
             PressS()
 
             counter = 0
 
-        if time.localtime().tm_min == 59:
-            log_to_file("Paycheck wir abgewartet")
-            print_hour_and_minute()
-            time.sleep(80)
+        # if time.localtime().tm_min == 59:
+        #     log_to_file("Paycheck wir abgewartet")
+        #     print(("Paycheck wir abgewartet"))
+        #     print_hour_and_minute()
+        #     time.sleep(80)
 
         #Server Neustart
         if istImZeitraum((4, 0), (4, 1)):
@@ -1215,10 +1252,10 @@ def loginfertig():
             IstServerFull()
             warten()
             SpawnPunkt()
-            warten()
-            escbis20sdtSlider()
-            warten()
-            GrandCoinSlider20hours()
+            # warten()
+            # escbis20sdtSlider()
+            # warten()
+            # GrandCoinSlider20hours()
             warten()
             escbisspielbeginn()
             warten()
