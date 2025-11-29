@@ -1098,9 +1098,9 @@ def isspielwiklichaus():
         log_to_file("spiel wurde wieder erkannt")
         solangeSpielAktivIst()
     else:
-         print("spiel wird beendet")
-         log_to_file("spiel wird beendet")
-         SpielBeenden()
+        print("spiel wird beendet")
+        log_to_file("spiel wird beendet")
+        SpielBeenden()
 
 # Abfrage ob Charakter gestorben ist 
 def Gestorben():
@@ -1207,7 +1207,8 @@ def solangeSpielAktivIst():
             Geld80std()
             time.sleep(120)
 
-        
+    else:
+        isspielwiklichaus()
 
 
 def escbisspielbeginn():
@@ -1224,7 +1225,9 @@ def escbisspielbeginn():
             log_to_file("ESC bis im spiel")
             print_hour_and_minute()
             print("ESC bis im zum AFK Botten")
-            keyboard.press_and_release('esc')
+            keyboard.press('esc')
+            time.sleep(0.8)  
+            keyboard.release('esc')
             warten()
         else:
             print_hour_and_minute()
@@ -1274,10 +1277,10 @@ def loginfertig():
             IstServerFull()
             warten()
             SpawnPunkt()
-            warten()
-            escbis20sdtSlider()
-            warten()
-            GrandCoinSlider20hours()
+            # warten()
+            # escbis20sdtSlider()
+            # warten()
+            # GrandCoinSlider20hours()
             warten()
             escbisspielbeginn()
             warten()
@@ -1299,7 +1302,6 @@ if __name__ == "__main__":
         while stop == False:
             solangeSpielAktivIst()
             warten()
-            isspielwiklichaus()
             warten()
             SpielBeenden()
             warten()
