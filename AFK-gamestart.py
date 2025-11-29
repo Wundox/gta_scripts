@@ -12,7 +12,7 @@ from PIL import ImageGrab
 pyautogui.FAILSAFE = False
 
 # zeit wie lange W,A,S,D gedrückt wird
-press = 0.8
+press = 0.9
 ##########################################
 
 
@@ -215,16 +215,24 @@ def prepare() -> GamesSaveState:
     print(speicherZustand.read_relogtime()+' wird gespeicher')
     log_to_file(speicherZustand.read_relogtime()+' wird gespeicher')
 
-    print('Drücke 1 für Bunker spawn oder 2 für Familienhaus spawn')
-    print('    1. Für JA')
-    print('    2. Für NEIN')
+    print('Wo Willst du Spawnen?')
+    print('    1. Im Bunker')
+    print('    2. Im Familienhaus')
+    print('    3. Eine Custom Koordinate')
     current_relog = input('Zahl eingeben: ')
     match int(current_relog):
         case 1:
             speicherZustand.write_bunkerspawn('JA')
         case 2:
             speicherZustand.write_bunkerspawn('NEIN')
-
+        case 3:
+            speicherZustand.write_bunkerspawn('3')
+        
+    if speicherZustand.read_bunkerspawn() == "3":
+        print("Bitte tippe deine Koordinaten ein bsp: 123, 123 ")
+        current_relog = input('Zahl eingeben: ')
+        speicherZustand.write_bunkerspawn(f'{current_relog}')
+    
     print(speicherZustand.read_bunkerspawn()+' wird gespeicher')
     log_to_file(speicherZustand.read_bunkerspawn()+' wird gespeicher')
 
@@ -258,6 +266,8 @@ def prepare() -> GamesSaveState:
                 speicherZustand.write_resolution('1920x1080')
             case 2:
                 speicherZustand.write_resolution('800x600')
+
+    
 
     print(speicherZustand.read_resolution()+' Verwende Auflösung')
     log_to_file(speicherZustand.read_resolution()+' Verwende Auflösung')
@@ -337,7 +347,6 @@ def isSpielAn(coord):
     return False
 
 
-
 def istgrandcoinssliderda(coord):
     pixel = pixelabfrage(coord)
     minColor = [239, 184, 36]
@@ -413,7 +422,6 @@ def SpielBeenden():
     os.system("taskkill /f /im steam.exe")
 
 
-
 def startding():
     log_to_file("RageMP wird gestart")
     print("Rage wird gestarted.")
@@ -450,18 +458,19 @@ def RageMPconnenct():
 
 
 def SpawnPunkt():
-    if speicherZustand.read_bunkerspawn == 'JA':
+    warten()
+    if speicherZustand.read_bunkerspawn() == 'JA':
         log_to_file("Wird beim Bunker gespawnt")
         print("Wird beim Bunker gespawnt")
         print_hour_and_minute()
         if speicherZustand.read_resolution() == '1920x1080':
-            pyautogui.moveTo(197, 595, duration=0.5) #fehlt
+            pyautogui.moveTo(798, 935, duration=0.5) 
         elif speicherZustand.read_resolution() == '800x600':
             pyautogui.moveTo(895, 778, duration=0.5)
         else:
             print('falsche auflösung')
 
-    elif speicherZustand.read_bunkerspawn == 'NEIN':
+    elif speicherZustand.read_bunkerspawn() == 'NEIN':
         log_to_file("Wird bei familie gespawnt")
         print("Wird bei familie gespawnt")
         print_hour_and_minute()
@@ -471,8 +480,21 @@ def SpawnPunkt():
             pyautogui.moveTo(640, 562, duration=0.5)
         else:
             print('falsche auflösung')
+
     else:
-        print('falsche angabe')
+        log_to_file(speicherZustand.read_bunkerspawn()+' Wird als Spawn genutzt')
+        print(speicherZustand.read_bunkerspawn()+' Wird als Spawn genutzt')
+        # Funktion aufrufen, um den String zu bekommen
+        bunkerspawn_str = speicherZustand.read_bunkerspawn()  # Achtung: () vergessen
+
+        # String in x und y umwandeln
+        x_str, y_str = bunkerspawn_str.split(',')
+        x, y = int(x_str.strip()), int(y_str.strip())
+
+        # Maus bewegen
+        pyautogui.moveTo(x, y, duration=0.5)
+        print_hour_and_minute()
+        
     
 
     warten()
@@ -1252,10 +1274,10 @@ def loginfertig():
             IstServerFull()
             warten()
             SpawnPunkt()
-            # warten()
-            # escbis20sdtSlider()
-            # warten()
-            # GrandCoinSlider20hours()
+            warten()
+            escbis20sdtSlider()
+            warten()
+            GrandCoinSlider20hours()
             warten()
             escbisspielbeginn()
             warten()
