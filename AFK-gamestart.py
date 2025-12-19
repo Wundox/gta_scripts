@@ -456,6 +456,18 @@ def RageMPconnenct():
     warten()
     mouse.click('left')
 
+def Charakterauswahl():
+    log_to_file("Charakterauswahl")
+    print("Charakterauswahl")
+    print_hour_and_minute()
+    if speicherZustand.read_resolution() == '1920x1080':
+        pyautogui.moveTo(798, 935, duration=0.5) 
+    elif speicherZustand.read_resolution() == '800x600':
+        pyautogui.moveTo(1269, 803, duration=0.5)
+    else:
+        print('falsche auflösung')
+    warten()
+    mouse.click('left')
 
 def SpawnPunkt():
     warten()
@@ -1258,7 +1270,7 @@ def IstServerFull():
 
 
 def loginfertig():
-    for y in range(300):
+    for y in range(400):
         print("Warte auf login screen")
         print_hour_and_minute()
         coord = []
@@ -1275,6 +1287,8 @@ def loginfertig():
             warten()
             password()
             IstServerFull()
+            warten()
+            Charakterauswahl()
             warten()
             SpawnPunkt()
             # warten()
@@ -1302,13 +1316,12 @@ if __name__ == "__main__":
         while stop == False:
             solangeSpielAktivIst()
             warten()
-            warten()
             SpielBeenden()
             warten()
             startding()
             warten()
             RageMPconnenct()
-            time.sleep(20)
+            time.sleep(40)
             print("Fertig mit warten, login wird abgefragt.")
             loginfertig()
             warten()
