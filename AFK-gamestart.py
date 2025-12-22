@@ -369,7 +369,7 @@ def IsServerFull(coord):
     return False
 
 
-def IstHausda(coord):  # fertig
+def IstHausda(coord): 
     pixel = pixelabfrage(coord)
     minColor = [150, 135,  28]  # Minimun farbe range
     maxColor = [255, 225, 50]  # Maximum farbe range
@@ -461,7 +461,7 @@ def Charakterauswahl():
     print("Charakterauswahl")
     print_hour_and_minute()
     if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(798, 935, duration=0.5) 
+        pyautogui.moveTo(1700, 982, duration=0.5) 
     elif speicherZustand.read_resolution() == '800x600':
         pyautogui.moveTo(1269, 803, duration=0.5)
     else:
@@ -497,7 +497,7 @@ def SpawnPunkt():
         log_to_file(speicherZustand.read_bunkerspawn()+' Wird als Spawn genutzt')
         print(speicherZustand.read_bunkerspawn()+' Wird als Spawn genutzt')
         # Funktion aufrufen, um den String zu bekommen
-        bunkerspawn_str = speicherZustand.read_bunkerspawn()  # Achtung: () vergessen
+        bunkerspawn_str = speicherZustand.read_bunkerspawn() 
 
         # String in x und y umwandeln
         x_str, y_str = bunkerspawn_str.split(',')
@@ -694,6 +694,40 @@ def Tagesinvest():
     warten()
 
 
+def Loginbonus():
+    print("Loginbonus wird abgeholt")
+    log_to_file("Loginbonus wird abgeholt")
+
+    # M Drücken
+    warten()
+    keyboard.press_and_release('m')
+    warten()
+
+    # Tägliche Aufgabe
+    if speicherZustand.read_resolution() == '1920x1080': 
+        pyautogui.moveTo(185, 1008, duration=0.5)
+    elif speicherZustand.read_resolution() == '800x600':
+        pyautogui.moveTo(600, 818, duration=0.5)
+    else:
+        print('falsche auflösung')
+    warten()
+    mouse.click('left')
+    warten()
+
+    # Zu dem Täglichen Belohnungen
+    if speicherZustand.read_resolution() == '1920x1080': 
+        pyautogui.moveTo(1304, 154, duration=0.5)
+    elif speicherZustand.read_resolution() == '800x600':
+        pyautogui.moveTo(1098, 377, duration=0.5)
+    else:
+        print('falsche auflösung')
+    warten()
+    mouse.click('left')
+    warten()
+
+    escbisspielbeginn()
+
+
 def FamAufgabe4Stunden():
     print("Familienaufgabe 4 Stunden wird angenommen")
     log_to_file("Familienaufgabe 4 Stunden wird angenommen")
@@ -766,6 +800,7 @@ def Geld80std():
     time.sleep(1)
     mouse.click('left')
     escbisspielbeginn()
+
 
 def Unternehmenbezhalen():
     print("Unternehmen bezhalen ")
@@ -907,6 +942,7 @@ def bankapphausbezhalen():
     mouse.click('left')
     warten()
 
+
 def bankapp():
     print("Bank App öffnen")
     log_to_file("Bank App öffnen")
@@ -923,6 +959,7 @@ def bankapp():
     warten()
     mouse.click('left')
     warten()
+
 
 def Hausbezahlen():
     print("Haus bezahlen")
@@ -1163,12 +1200,6 @@ def solangeSpielAktivIst():
 
             counter = 0
 
-        # if time.localtime().tm_min == 59:
-        #     log_to_file("Paycheck wir abgewartet")
-        #     print(("Paycheck wir abgewartet"))
-        #     print_hour_and_minute()
-        #     time.sleep(80)
-
         #Server Neustart
         if istImZeitraum((4, 0), (4, 1)):
             log_to_file("4 Uhr Server Neustart")
@@ -1211,12 +1242,15 @@ def solangeSpielAktivIst():
         if istImZeitraum((17, 0), (17, 1)) or istImZeitraum((23, 0), (23, 1)):
             Tagesinvest()
             escbisspielbeginn()
+            Loginbonus()
+            escbisspielbeginn()
             time.sleep(120)
 
         if istImZeitraum((18, 15), (18, 16)):
             log_to_file("80 Std Abholen ")
             print("80 Std Abholen")
             Geld80std()
+            escbisspielbeginn()
             time.sleep(120)
 
     else:
