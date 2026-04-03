@@ -103,7 +103,7 @@ class GamesSaveState:
         keyboard.wait("ctrl+v")
         new_password = clipboard.paste()
         self.write_password(new_password)
-
+    
     def paste_path(self):
         keyboard.wait("ctrl+v")
         # Entfernt Anführungszeichen, wenn sie vorhanden sind
@@ -616,9 +616,9 @@ def Tagesinvest():
     warten()
     # investion moven und klicken
     if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(1635, 1011, duration=0.5)
-    elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(1242, 810, duration=0.5)
+        pyautogui.moveTo(1720, 449, duration=0.5)
+    elif speicherZustand.read_resolution() == '800x600': 
+        pyautogui.moveTo(1277, 581, duration=0.5)
     else:
         print('falsche auflösung')
     warten()
@@ -810,9 +810,9 @@ def Unternehmenbezhalen():
     warten()
     # In Bank app auf Unternehmen ziehen und klicken
     if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(1468, 551, duration=0.5)
+        pyautogui.moveTo(1438, 600, duration=0.5)
     elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(1167, 622, duration=0.5)
+        pyautogui.moveTo(1161, 637, duration=0.5)
     else:
         print('falsche auflösung')
     warten()
@@ -829,11 +829,11 @@ def bunkerbezahlen():
     warten()
     keyboard.press_and_release('k')
     warten()
-    # In Bank app auf Bunker ziehen und klicken
+    # im handy auf Bunker ziehen und klicken
     if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(1636, 911, duration=0.5)
+        pyautogui.moveTo(1507, 461, duration=0.5)
     elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(1239, 773, duration=0.5)
+        pyautogui.moveTo(1186, 582, duration=0.5)
     else:
         print('falsche auflösung')
     warten()
@@ -932,10 +932,10 @@ def hauserkennung():
 def bankapphausbezhalen():
     print("Haus bezahlen")
     log_to_file("Haus bezahlen")
-    if speicherZustand.read_resolution() == '1920x1080':  # fertig
-        pyautogui.moveTo(1643, 472, duration=0.5)
-    elif speicherZustand.read_resolution() == '800x600':  # fertig
-        pyautogui.moveTo(1252, 581, duration=0.5)
+    if speicherZustand.read_resolution() == '1920x1080': 
+        pyautogui.moveTo(1663, 483, duration=0.5)
+    elif speicherZustand.read_resolution() == '800x600':
+        pyautogui.moveTo(1260, 593, duration=0.5)
     else:
         print('falsche auflösung')
     warten()
@@ -951,9 +951,9 @@ def bankapp():
     warten()
     # Auf bank ziehen und klicken
     if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(1554, 817, duration=0.5)
-    elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(1208, 731, duration=0.5)
+        pyautogui.moveTo(1503, 723, duration=0.5)
+    elif speicherZustand.read_resolution() == '800x600': 
+        pyautogui.moveTo(1186, 691, duration=0.5)
     else:
         print('falsche auflösung')
     warten()
