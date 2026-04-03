@@ -112,7 +112,8 @@ class GamesSaveState:
 
     def password_empty(self):
         return len(self.password) == 0
-
+ 
+ 
     def path_empty(self):
         return len(self.path) == 0
 
