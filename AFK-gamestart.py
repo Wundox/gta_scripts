@@ -1,6 +1,8 @@
 import json
 import os
+import subprocess
 import time
+from pathlib import Path
 
 import clipboard
 import keyboard
@@ -15,13 +17,11 @@ pyautogui.FAILSAFE = False
 press = 0.9
 ##########################################
 
-
 def log_to_file(message):
     with open('logfile.txt', 'a') as file:
         timestamp = time.strftime("%d.%m.%Y / %H:%M", time.localtime())
         log_message = f"{timestamp} - {message}\n"
         file.write(log_message)
-
 
 def print_hour_and_minute():
     current_time = time.localtime()
@@ -34,7 +34,6 @@ def print_hour_and_minute():
 # maxPixelRange = [R,G,B] ; Der pixel darf nicht überschreiten
 # Return: True wenn in Range, ansonsten False
 
-
 def inColorRange(inputPixel, minPixelRange, maxPixelRange):
     for pos in range(3):
         # Erster Fall, zu niedrig
@@ -44,7 +43,6 @@ def inColorRange(inputPixel, minPixelRange, maxPixelRange):
         if inputPixel[pos] > maxPixelRange[pos]:
             return False
     return True
-
 
 class GamesSaveState:
     def __init__(self, password='', path='', resolution='1920x1080', waittime='15', relogtime='', autostart='', bunkerspawn=''):
@@ -100,14 +98,14 @@ class GamesSaveState:
         self.bunkerspawn = bunkerspawn
 
     def paste_password(self):
-        keyboard.wait("ctrl+v")
-        new_password = clipboard.paste()
+        print("  ")
+        new_password = input("Bitte schreiben Sie das Password ein oder (mit STRG+V) einfügen: ").strip('"')
         self.write_password(new_password)
     
     def paste_path(self):
-        keyboard.wait("ctrl+v")
-        # Entfernt Anführungszeichen, wenn sie vorhanden sind
-        new_path = clipboard.paste().strip('"')
+        print("  ")
+        new_path = input("Bitte schreiben Sie den Pfad zur .exe-Datei ein oder (mit STRG+V) einfügen:").strip('"')
+        print("  ")
         self.write_path(new_path)
 
     def password_empty(self):
@@ -136,7 +134,8 @@ class GamesSaveState:
         }
 
     def save(self):
-        with open(self.config_file(), "+w") as file:
+        with open(self.config_file(), "w", encoding="utf-8") as file:
+        # with open(self.config_file(), "+w") as file:
             json.dump(self.write_data(), file)
 
     def _config_read_checker(self, jsonConfigFile, key: str, alternativValue: any) -> str:
@@ -147,7 +146,7 @@ class GamesSaveState:
             return str(alternativValue)
 
     def read(self):
-        with open(self.config_file(), "r") as file:
+        with open(self.config_file(), "r", encoding="utf-8") as file:
             tmp = json.load(file)
             self.password = self._config_read_checker(
                 tmp, 'password', self.password)
@@ -170,7 +169,6 @@ class GamesSaveState:
     def config_file(self):
         return os.path.join(self.config_path(), 'config.json')
 
-
 def prepare() -> GamesSaveState:
     speicherZustand = GamesSaveState()
     if speicherZustand.read_autostart() == "JA":
@@ -179,15 +177,9 @@ def prepare() -> GamesSaveState:
         return speicherZustand
 
     if speicherZustand.password_empty():
-        # new_password = input("Bitte geben Sie ein neues Passwort ein: ")
-        print("Bitte schreiben Sie ein Password ein oder (mit STRG+V): ")
-        # speicherZustand.write_password(new_password)
         speicherZustand.paste_password()
 
     if speicherZustand.path_empty():
-        # new_path = input("Bitte geben Sie den Pfad ein: ")
-        # speicherZustand.write_path(new_path)
-        print("Bitte schreiben Sie den Pfad zur .exe-Datei ein oder (mit STRG+V): ")
         speicherZustand.paste_path()
 
     print('Wartzeit zwischen den ausführungen:')
@@ -276,7 +268,6 @@ def prepare() -> GamesSaveState:
     speicherZustand.save()
     return speicherZustand
 
-
 def password():
     print("Password eingabe wurde erkannt.")
     if speicherZustand.read_resolution() == '1920x1080':
@@ -298,7 +289,6 @@ def password():
     LoginButton()
     print("Login Fertig.")
 
-
 def LoginButton():
     if speicherZustand.read_resolution() == '1920x1080':
         pyautogui.moveTo(651, 678, duration=0.5)
@@ -309,7 +299,6 @@ def LoginButton():
 
     warten()
     mouse.click('left')
-
 
 def pixelabfrage(game_coords):
     screenshot = ImageGrab.grab(
@@ -324,7 +313,6 @@ def pixelabfrage(game_coords):
     midY = ylen // 2
     return erkennung[midX, midY]
 
-
 def ispasswordabfrage(coord):
     pixel = pixelabfrage(coord)
     minColor = [237, 60, 86]  # Minimun farbe range
@@ -334,7 +322,6 @@ def ispasswordabfrage(coord):
         return True
     log_to_file(f"keine Password eingabe erkannt. R:G:B {pixel}")
     return False
-
 
 def isSpielAn(coord):
     pixel = pixelabfrage(coord)
@@ -347,7 +334,6 @@ def isSpielAn(coord):
     # print(coord)
     return False
 
-
 def istgrandcoinssliderda(coord):
     pixel = pixelabfrage(coord)
     minColor = [239, 184, 36]
@@ -357,7 +343,6 @@ def istgrandcoinssliderda(coord):
         return True
     log_to_file(f"Grandcoin slider nicht erkannt. R:G:B {pixel}")
     return False
-
 
 def IsServerFull(coord):
     pixel = pixelabfrage(coord)
@@ -369,7 +354,6 @@ def IsServerFull(coord):
     log_to_file(f"Server nicht Full. R:G:B {pixel}")
     return False
 
-
 def IstHausda(coord): 
     pixel = pixelabfrage(coord)
     minColor = [150, 135,  28]  # Minimun farbe range
@@ -379,7 +363,6 @@ def IstHausda(coord):
         return True
     log_to_file(f"Kein Haus erkannt. R:G:B {pixel}")
     return False
-
 
 def investfertig(coord):
     pixel = pixelabfrage(coord)
@@ -404,58 +387,88 @@ def Istgestorben(coord):
         return True
     return False
 
+def GrandExeda(coord): 
+    pixel = pixelabfrage(coord)
+    minColor = [240, 214,  40]  # Minimun farbe range
+    maxColor = [255, 226,  50]  # Maximum farbe range
+    if inColorRange(pixel, minColor, maxColor):
+        log_to_file(f"GrandRP exe erkannt. R:G:B {pixel}")
+        return True
+    log_to_file(f"GrandRP exe nicht erkannt. R:G:B {pixel}")
+    return False
+
 def SpielBeenden():
     print("Alle programme werden beendet.")
     log_to_file("Alle programme werden Beendet")
     print_hour_and_minute()
-    os.system("taskkill /f /im GTA5.exe")
-    warten()
-    os.system("taskkill /f /im Launcher.exe")
-    warten()
-    os.system("taskkill /f /im LauncherPatcher.exe")
-    warten()
-    os.system("taskkill /f /im ragemp_v.exe")
-    warten()
-    os.system("taskkill /f /im PlayGTAV.exe")
-    warten()
-    os.system("taskkill /f /im updater.exe")
-    warten()
-    os.system("taskkill /f /im steam.exe")
+    prozesse = [
+    "GTA5.exe",
+    "Launcher.exe",
+    "LauncherPatcher.exe",
+    "ragemp_v.exe",
+    "PlayGTAV.exe",
+    "updater.exe",
+    "steam.exe"
+    "grandrp_launcher.exe"
+    ]
 
+    for p in prozesse:
+        print(f"Beende Prozess: {p}")
+
+        result = subprocess.run(
+            ["taskkill", "/f", "/im", p],
+            capture_output=True,
+            text=True
+        )
+
+        if result.returncode == 0:
+            print(f"{p}: erfolgreich beendet")
+        else:
+            print(f"{p}: nicht gefunden oder Fehler")
+            print(result.stdout.strip())
+            print(result.stderr.strip())
+
+        warten()
 
 def startding():
     log_to_file("RageMP wird gestart")
     print("Rage wird gestarted.")
     print_hour_and_minute()
+    
     start_path = speicherZustand.read_path()
-    exec_path = "\\".join(start_path.split("\\")[:2])
-    start_cmd = "start \"RageMp\" /d {exec_path} {execution_path}".format(
-        execution_path=start_path,
-        exec_path=exec_path)
-    os.system(start_cmd)
+    subprocess.Popen(
+        start_path,
+        cwd=os.path.dirname(start_path),
+        shell=True)
+    exit(1)
     warten()
-    # os.system("switch.bat \"RageMp\"")
-
 
 def RageMPconnenct():
-    log_to_file("Ragemp Connect")
+    log_to_file("Grand RP Connect")
     print("Auf Grand connecten.")
     warten()
     print_hour_and_minute()
-    pyautogui.moveTo(1357, 217, duration=0.5)
+    pyautogui.moveTo(1170, 480, duration=0.5)
     warten()
     mouse.click('left')
     warten()
-    pyautogui.moveTo(864, 557, duration=0.5)
+    coord = []
+    if speicherZustand.read_resolution() == '1920x1080':
+        coord = [1167, 754, 1168, 755]
+    elif speicherZustand.read_resolution() == '800x600':
+        coord = [1167, 754, 1168, 755]
+    else:
+        print('falsche auflösung')
+
+    if GrandExeda(coord):
+        pyautogui.moveTo(1275, 755, duration=0.5)
+
+    elif not GrandExeda():
+        warten()
+        SpielBeenden()
     warten()
     mouse.click('left')
-    mouse.click('left')
-    mouse.click('left')
-    warten()
-    keyboard.write("de.gta5grand.com")
-    pyautogui.moveTo(1146, 563, duration=0.5)
-    warten()
-    mouse.click('left')
+
 
 def Charakterauswahl():
     log_to_file("Charakterauswahl")
@@ -513,13 +526,11 @@ def SpawnPunkt():
     warten()
     mouse.click('left')
 
-
 def PressW():
     keyboard.press('w')
     time.sleep(press)
     keyboard.release('w')
     print("W wird gedrückt")
-
 
 def PressA():
     keyboard.press('a')
@@ -527,13 +538,11 @@ def PressA():
     keyboard.release('a')
     print("A wird gedrückt")
 
-
 def PressS():
     keyboard.press('s')
     time.sleep(press)
     keyboard.release('s')
     print("D wird gedrückt")
-
 
 def PressD():
     keyboard.press('d')
@@ -541,11 +550,9 @@ def PressD():
     keyboard.release('d')
     print("D wird gedrückt")
 
-
 def warten():
     print(f"{speicherZustand.read_waittime()} Sekunden Pause")
     time.sleep(int(speicherZustand.read_waittime()))
-
 
 def GrandCoinSlider20hours():  # noch nicht fertig
     # investion moven und klicken
@@ -586,7 +593,6 @@ def GrandCoinSlider20hours():  # noch nicht fertig
         warten()
         mouse.click('left')
 
-
 def escbis20sdtSlider():  # noch nicht fertig
     for x in range(10):
         coord = []
@@ -606,7 +612,6 @@ def escbis20sdtSlider():  # noch nicht fertig
         else:
             print_hour_and_minute()
             break
-
 
 def Tagesinvest():
     print("Investion 8 Stunden wird abgeholt")
@@ -694,7 +699,6 @@ def Tagesinvest():
     keyboard.press_and_release('esc')
     warten()
 
-
 def Loginbonus():
     print("Loginbonus wird abgeholt")
     log_to_file("Loginbonus wird abgeholt")
@@ -727,7 +731,6 @@ def Loginbonus():
     warten()
 
     escbisspielbeginn()
-
 
 def FamAufgabe4Stunden():
     print("Familienaufgabe 4 Stunden wird angenommen")
@@ -770,7 +773,6 @@ def FamAufgabe4Stunden():
     warten()
     mouse.click('left')
 
-
 def Geld80std():
     print("80 Stunden werden abgeholt")
     log_to_file("80 Stunden werden abgeholt")
@@ -802,7 +804,6 @@ def Geld80std():
     mouse.click('left')
     escbisspielbeginn()
 
-
 def Unternehmenbezhalen():
     print("Unternehmen bezhalen ")
     log_to_file("Unternehmen bezhalen")
@@ -823,7 +824,6 @@ def Unternehmenbezhalen():
     warten()
     keyboard.press_and_release('esc')
     
-
 def bunkerbezahlen():
     print("Bunker bezahlen")
     log_to_file("Bunker bezahlen")
@@ -852,10 +852,7 @@ def bunkerbezahlen():
     warten()
     hauserkennung()
 
-
 # ersten mal weiter wo alle häuser sichtbar
-
-
 def hausauswahlweiter():  # fertig
     if speicherZustand.read_resolution() == '1920x1080':  # fertig
         pyautogui.moveTo(1044, 757, duration=0.5)
@@ -866,7 +863,6 @@ def hausauswahlweiter():  # fertig
     warten()
     mouse.click('left')
     warten()
-
 
 # weiter klicken wenn haus da ist
 def hausweiterklicken():
@@ -881,8 +877,6 @@ def hausweiterklicken():
     warten()
 
 # Überprüfen ob Haus das ist weiter symbol
-
-
 def hauserkennung():
     coord = []
     if speicherZustand.read_resolution() == '1920x1080':
@@ -929,7 +923,6 @@ def hauserkennung():
         print_hour_and_minute()
 
 # In Bank App, Bezahlung Haus Klicken
-
 def bankapphausbezhalen():
     print("Haus bezahlen")
     log_to_file("Haus bezahlen")
@@ -942,7 +935,6 @@ def bankapphausbezhalen():
     warten()
     mouse.click('left')
     warten()
-
 
 def bankapp():
     print("Bank App öffnen")
@@ -961,7 +953,6 @@ def bankapp():
     mouse.click('left')
     warten()
 
-
 def Hausbezahlen():
     print("Haus bezahlen")
     log_to_file("Haus bezahlen")
@@ -976,7 +967,6 @@ def Hausbezahlen():
     Haus4()
     warten()
     keyboard.press_and_release('esc')
-
 
 def Haus1():
     bankapphausbezhalen()
@@ -998,10 +988,8 @@ def Haus1():
     # Überprüfung ob  Haus zu bezahlen ist
     hauserkennung()
 
-
 def Haus2():
     bankapphausbezhalen()
-
     # Haus  zeiehn klick #fertig
     if speicherZustand.read_resolution() == '1920x1080': 
         pyautogui.moveTo(959, 472, duration=0.5)
@@ -1018,7 +1006,6 @@ def Haus2():
 
     # Überprüfung ob  Haus zu beazheln ist da ist
     hauserkennung()
-
 
 def Haus3():
     bankapphausbezhalen()
@@ -1040,21 +1027,8 @@ def Haus3():
     # Überprüfung ob  Haus zu beazheln ist da ist
     hauserkennung()
 
-
 def Haus4():
     bankapphausbezhalen()
-    # # auf scrollbar ziehen
-    # if speicherZustand.read_resolution() == '1920x1080':
-    #     pyautogui.moveTo(945, 648, duration=0.5)
-    # elif speicherZustand.read_resolution() == '800x600':  # fertig
-    #     pyautogui.moveTo(1033, 579, duration=0.5)
-    # else:
-    #     print('falsche auflösung')
-    # warten()
-    # mouse.click('left')
-    # warten()
-
-    # Haus 4 zeiehn klick
     if speicherZustand.read_resolution() == '1920x1080':  # fertig für jeden Hasus machen
         pyautogui.moveTo(945, 648, duration=0.5)
     elif speicherZustand.read_resolution() == '800x600':  # fertig
@@ -1071,10 +1045,8 @@ def Haus4():
     # Überprüfung ob  Haus zu beazheln ist da ist
     hauserkennung()
 
-
 global stop
 stop = True
-
 
 def start_event():
     global stop
@@ -1082,17 +1054,14 @@ def start_event():
     print("Start")
     log_to_file("AFK Bot Programm start mit X taste")
 
-
 def stop_event():
     global stop
     stop = True
     print("Wird Pausiert")
     log_to_file("AFK Bot Programm stop mit e taste")
 
-
 keyboard.add_hotkey('x', lambda: start_event())
 # keyboard.add_hotkey('e', lambda: stop_event())
-
 
 def istImZeitraum(start_time=(0, 0), end_time=(0, 0)):
     systemzeit = time.localtime()
@@ -1130,7 +1099,6 @@ def istImZeitraum(start_time=(0, 0), end_time=(0, 0)):
         return False
     return True
 
-
 def isspielwiklichaus():
     print("Spiel wurde gerade nicht mehr erkannt")
     log_to_file("Spiel wurde gerade nicht mehr erkannt")
@@ -1153,6 +1121,7 @@ def isspielwiklichaus():
         SpielBeenden()
 
 # Abfrage ob Charakter gestorben ist 
+
 def Gestorben():
     time.sleep(2)
     coord = []  
@@ -1170,7 +1139,6 @@ def Gestorben():
         SpielBeenden()
     else:
         print("spieler ist nicht gestorben")
-
 
 counter = 0
 def solangeSpielAktivIst():
@@ -1257,7 +1225,6 @@ def solangeSpielAktivIst():
     else:
         isspielwiklichaus()
 
-
 def escbisspielbeginn():
     for x in range(10):
         coord = []
@@ -1279,7 +1246,6 @@ def escbisspielbeginn():
         else:
             print_hour_and_minute()
             break
-
 
 def IstServerFull():
     for v in range(15):
@@ -1303,7 +1269,6 @@ def IstServerFull():
 
         time.sleep(0.5)
 
-
 def loginfertig():
     for y in range(400):
         print("Warte auf login screen")
@@ -1326,16 +1291,11 @@ def loginfertig():
             Charakterauswahl()
             warten()
             SpawnPunkt()
-            # warten()
-            # escbis20sdtSlider()
-            # warten()
-            # GrandCoinSlider20hours()
             warten()
             escbisspielbeginn()
             warten()
             break
         time.sleep(1)
-
 
 if __name__ == "__main__":
     speicherZustand = prepare()
@@ -1351,8 +1311,6 @@ if __name__ == "__main__":
         while stop == False:
             solangeSpielAktivIst()
             warten()
-            SpielBeenden()
-            warten()
             startding()
             warten()
             RageMPconnenct()
@@ -1360,3 +1318,4 @@ if __name__ == "__main__":
             print("Fertig mit warten, login wird abgefragt.")
             loginfertig()
             warten()
+          
