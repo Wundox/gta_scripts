@@ -408,8 +408,8 @@ def SpielBeenden():
     "ragemp_v.exe",
     "PlayGTAV.exe",
     "updater.exe",
-    "steam.exe"
-    "grandrp_launcher.exe"
+    "steam.exe",
+    "grandrp_launcher.exe",
     ]
 
     for p in prozesse:
@@ -434,24 +434,22 @@ def startding():
     log_to_file("RageMP wird gestart")
     print("Rage wird gestarted.")
     print_hour_and_minute()
-    
+
+    # Maus muss auf Hauptmonitor damit Launcher da startet
+    pyautogui.moveTo(1170, 480, duration=0.5)
+    warten()
     start_path = speicherZustand.read_path()
     subprocess.Popen(
         start_path,
         cwd=os.path.dirname(start_path),
         shell=True)
-    exit(1)
     warten()
 
 def RageMPconnenct():
     log_to_file("Grand RP Connect")
     print("Auf Grand connecten.")
     warten()
-    print_hour_and_minute()
-    pyautogui.moveTo(1170, 480, duration=0.5)
-    warten()
-    mouse.click('left')
-    warten()
+    
     coord = []
     if speicherZustand.read_resolution() == '1920x1080':
         coord = [1167, 754, 1168, 755]
@@ -461,9 +459,13 @@ def RageMPconnenct():
         print('falsche auflösung')
 
     if GrandExeda(coord):
+        print_hour_and_minute()
+        pyautogui.moveTo(1170, 480, duration=0.5)
+        warten()
+        mouse.click('left')
+        warten()
         pyautogui.moveTo(1275, 755, duration=0.5)
-
-    elif not GrandExeda():
+    else:
         warten()
         SpielBeenden()
     warten()
