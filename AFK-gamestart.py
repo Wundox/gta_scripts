@@ -386,7 +386,7 @@ def Istgestorben(coord):
         print("Charakter ist Gestorben")
         return True
     return False
-
+#Neue Grand exe zum starten
 def GrandExeda(coord): 
     pixel = pixelabfrage(coord)
     minColor = [240, 214,  40]  # Minimun farbe range
@@ -395,6 +395,17 @@ def GrandExeda(coord):
         log_to_file(f"GrandRP exe erkannt. R:G:B {pixel}")
         return True
     log_to_file(f"GrandRP exe nicht erkannt. R:G:B {pixel}")
+    return False
+
+def KeinPrimeFarbAbfrage(coord): 
+    pixel = pixelabfrage(coord)
+    minColor = [245, 197, 1]  # Minimun farbe range
+    maxColor = [255, 210, 3]  # Maximum farbe range
+    if inColorRange(pixel, minColor, maxColor):
+        log_to_file(f"Kein Prime spawn erkannt. R:G:B {pixel}")
+        print("Kein prime erkannt")
+        return True
+    log_to_file(f"Prime spawn erkannt. R:G:B {pixel}")
     return False
 
 def SpielBeenden():
@@ -471,7 +482,6 @@ def RageMPconnenct():
     warten()
     mouse.click('left')
 
-
 def Charakterauswahl():
     log_to_file("Charakterauswahl")
     print("Charakterauswahl")
@@ -491,21 +501,21 @@ def SpawnPunkt():
         log_to_file("Wird beim Bunker gespawnt")
         print("Wird beim Bunker gespawnt")
         print_hour_and_minute()
-        if speicherZustand.read_resolution() == '1920x1080':
-            pyautogui.moveTo(798, 935, duration=0.5) 
-        elif speicherZustand.read_resolution() == '800x600':
-            pyautogui.moveTo(895, 778, duration=0.5)
+        if speicherZustand.read_resolution() == '1920x1080': 
+            pyautogui.moveTo(1412, 666, duration=0.5) 
+        elif speicherZustand.read_resolution() == '800x600': 
+            pyautogui.moveTo(1145, 591, duration=0.5)
         else:
-            print('falsche auflösung')
+            print('falsche auflösung')        
 
     elif speicherZustand.read_bunkerspawn() == 'NEIN':
         log_to_file("Wird bei familie gespawnt")
         print("Wird bei familie gespawnt")
         print_hour_and_minute()
-        if speicherZustand.read_resolution() == '1920x1080':
-            pyautogui.moveTo(197, 595, duration=0.5)
-        elif speicherZustand.read_resolution() == '800x600':
-            pyautogui.moveTo(640, 562, duration=0.5)
+        if speicherZustand.read_resolution() == '1920x1080': 
+            pyautogui.moveTo(1111, 665, duration=0.5)
+        elif speicherZustand.read_resolution() == '800x600': 
+            pyautogui.moveTo(1023, 591, duration=0.5)
         else:
             print('falsche auflösung')
 
@@ -527,6 +537,27 @@ def SpawnPunkt():
 
     warten()
     mouse.click('left')
+    warten()
+    # Wird nachs spawn auswählen geschaut ob man prime hat
+    coord = []  
+    if speicherZustand.read_resolution() == '1920x1080':
+        coord = [1053, 509, 1054, 510]  
+    elif speicherZustand.read_resolution() == '800x600':
+        coord = [994, 526, 995, 527]  
+    else:
+        print('falsche auflösung')
+
+    if KeinPrimeFarbAbfrage(coord):
+        warten()
+        if speicherZustand.read_resolution() == '1920x1080': 
+            pyautogui.moveTo(1052, 524, duration=0.5) 
+        elif speicherZustand.read_resolution() == '800x600':
+            pyautogui.moveTo(1001, 534, duration=0.5)
+        else:
+            print('falsche auflösung')
+
+        warten()
+        mouse.click('left')
 
 def PressW():
     keyboard.press('w')
@@ -1316,7 +1347,7 @@ if __name__ == "__main__":
             startding()
             warten()
             RageMPconnenct()
-            time.sleep(40)
+            time.sleep(45)
             print("Fertig mit warten, login wird abgefragt.")
             loginfertig()
             warten()
