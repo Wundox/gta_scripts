@@ -785,9 +785,9 @@ def FamAufgabe4Stunden():
     warten()
     # familien aufgabe
     if speicherZustand.read_resolution() == '1920x1080':
-        pyautogui.moveTo(158, 617, duration=0.5)
+        pyautogui.moveTo(179, 576, duration=0.5)
     elif speicherZustand.read_resolution() == '800x600':
-        pyautogui.moveTo(624, 578, duration=0.5)
+        pyautogui.moveTo(633, 552, duration=0.5)
     else:
         print('falsche auflösung')
 
@@ -1208,7 +1208,7 @@ def solangeSpielAktivIst():
             print_hour_and_minute()
             SpielBeenden()
             time.sleep(600)
-
+        
         # # Tagesinvest
         if istImZeitraum((5, 1), (5, 3)) or istImZeitraum((5, 40), (5, 41)):
             log_to_file("05:01Uhr oder 05:40Uhr Invest und Fam")
